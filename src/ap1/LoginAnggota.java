@@ -5,6 +5,9 @@
  */
 package ap1;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import javax.swing.JOptionPane;
 
 /**
@@ -13,10 +16,15 @@ import javax.swing.JOptionPane;
  */
 public class LoginAnggota extends javax.swing.JFrame {
     int counter = 0;
+    
+    Connection conn;
+    Statement stat;
+    ResultSet rs;
+    String sql;
     /**
      * Creates new form Login
      */
-    public LoginAnggota() {
+        public LoginAnggota() {
         initComponents();
     }
 
@@ -165,19 +173,37 @@ public class LoginAnggota extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnloginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnloginActionPerformed
-        if (username.getText().equals("")) {
-            JOptionPane.showMessageDialog(null, "Username Kosong");
-            username.requestFocus();
+        
+        try {
+            conn = koneksi.config();
+            sql = "SELECT * FROM anggota WHERE kode_anggota='"+username.getText()+"' AND pass_anggota='"+password.getText()+"'";
+            rs = stat.executeQuery(sql);
+            if(rs.next()){
+                if(username.getText().equals(rs.getString("username")) && password.getText().equals(rs.getString("password"))){
+                    JOptionPane.showMessageDialog(null, "berhasil login");
+                    new DashboardAnggota().show();
+                    this.dispose();
+                } else if (username.getText().equals("")) {
+                    JOptionPane.showMessageDialog(null, "Username Kosong");
+                    username.requestFocus();
+                } else if (password.getText().equals("")) {
+                    JOptionPane.showMessageDialog(null, "Password Kosong");
+                    password.requestFocus();
+                } 
+            } else {
+                    JOptionPane.showMessageDialog(null, "username atau password salah");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Gagal Login, mohon diulang ");
         }
-        else if (password.getText().equals("")) {
-            JOptionPane.showMessageDialog(null, "Password Kosong");
-            password.requestFocus();
-        }
-        else if (username.getText().contains("")&& 
-                password.getText().contains("")) {
-            new DashboardAnggota().show();
-            this.dispose();
-        }   
+        
+//        if (username.getText().equals("")) {
+//            JOptionPane.showMessageDialog(null, "Username Kosong");
+//            username.requestFocus();
+//        } else if (password.getText().equals("")) {
+//            JOptionPane.showMessageDialog(null, "Password Kosong");
+//            password.requestFocus();
+//        } 
     }//GEN-LAST:event_btnloginActionPerformed
 
     private void showpassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showpassActionPerformed
